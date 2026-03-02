@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx next build:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(where npm)",
+      "Bash(python manage.py:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(python3 -c \" import sys, json for line in sys.stdin: try: obj = json.loads\\(line.strip\\(\\)\\) if obj.get\\(''type''\\) == ''user'': print\\(''USER:'', json.dumps\\(obj.get\\(''message'', {}\\).get\\(''content'', ''''\\)\\)[:500]\\) elif obj.get\\(''type''\\) == ''assistant'': content = obj.get\\(''message'', {}\\).get\\(''content'', []\\) for c in content: if isinstance\\(c, dict\\) and c.get\\(''type''\\) == ''text'': print\\(''ASSISTANT TEXT:'', c[''text''][:500]\\) elif isinstance\\(c, dict\\) and c.get\\(''type''\\) == ''tool_use'': print\\(''TOOL USE:'', c.get\\(''name'', ''''\\), json.dumps\\(c.get\\(''input'', {}\\)\\)[:300]\\) except: pass \")"
+    ]
+  }
+}

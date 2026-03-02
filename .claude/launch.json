@@ -1,0 +1,40 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "django-backend",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["manage.py", "runserver", "0.0.0.0:8000"],
+      "cwd": "backend",
+      "port": 8000
+    },
+    {
+      "name": "next-frontend",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/next/dist/bin/next", "dev"],
+      "cwd": "frontend",
+      "port": 3000
+    },
+    {
+      "name": "celery-worker",
+      "runtimeExecutable": "celery",
+      "runtimeArgs": ["-A", "salescount", "worker", "--loglevel=info"],
+      "cwd": "backend",
+      "port": 0
+    },
+    {
+      "name": "celery-beat",
+      "runtimeExecutable": "celery",
+      "runtimeArgs": ["-A", "salescount", "beat", "--loglevel=info", "--scheduler", "django_celery_beat.schedulers:DatabaseScheduler"],
+      "cwd": "backend",
+      "port": 0
+    },
+    {
+      "name": "flower-monitor",
+      "runtimeExecutable": "celery",
+      "runtimeArgs": ["-A", "salescount", "flower", "--port=5555"],
+      "cwd": "backend",
+      "port": 5555
+    }
+  ]
+}
