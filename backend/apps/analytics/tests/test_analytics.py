@@ -117,7 +117,7 @@ def _seed_data(merchant, days_ago=3):
         destination_url='https://example.com/fraud',
         expires_at=timezone.now() + timedelta(hours=24),
     )
-    fraud_click = ClickEvent.objects.create(
+    ClickEvent.objects.create(
         redirect_token=fraud_token,
         ip_address='9.9.9.9',
         user_agent='bot/1.0',

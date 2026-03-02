@@ -1,13 +1,11 @@
 """Tests for the WhatsApp bot conversation engine."""
-from unittest.mock import patch, MagicMock
-
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from apps.accounts.models import User
-from apps.merchants.models import MerchantProfile, SKU, PromoRule
+from apps.merchants.models import MerchantProfile, PromoRule
 from apps.campaigns.models import Campaign, ABTestVariant
-from apps.conversations.models import Conversation, Message, FollowUpSchedule
+from apps.conversations.models import Conversation, Message
 from apps.conversations.bot.engine import ConversationEngine
 
 
@@ -431,7 +429,7 @@ class OptOutTest(TestCase):
 
     def test_opt_out_keywords(self):
         for keyword in ['STOP', 'UNSUBSCRIBE', 'QUIT']:
-            conv = Conversation.objects.create(
+            Conversation.objects.create(
                 phone_number=f'whatsapp:+{keyword}test',
                 merchant=self.merchant,
             )

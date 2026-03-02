@@ -2,7 +2,6 @@
 
 
 def get_prompt_for_stage(stage: str, merchant_name: str = '', context: dict = None) -> str:
-    ctx = context or {}
     base = (
         f"You are a friendly, helpful shopping assistant for {merchant_name}. "
         "You speak in a warm, conversational tone — mix of Hinglish and English is fine. "

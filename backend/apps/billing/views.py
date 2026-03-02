@@ -142,7 +142,6 @@ class DisputeCreateView(generics.CreateAPIView):
         merchant = self.request.user.merchant_profile
 
         # Check dispute window
-        from datetime import timedelta
         if (timezone.now() - conversion.converted_at).days > merchant.dispute_window_days:
             raise DisputeWindowExpired()
 

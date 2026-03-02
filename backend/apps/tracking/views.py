@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from common.permissions import IsAdmin, IsAdminOrMerchant
 from .models import RedirectToken, ClickEvent, FraudFlag
-from .serializers import ClickEventSerializer, ClickEventSummarySerializer, FraudFlagSerializer
+from .serializers import ClickEventSerializer, FraudFlagSerializer
 from .tasks import calculate_fraud_score
 
 

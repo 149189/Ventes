@@ -89,7 +89,7 @@ class Command(BaseCommand):
         if created:
             admin.set_password('admin1234')
             admin.save()
-            self.stdout.write(f'  Created admin user: admin / admin1234')
+            self.stdout.write('  Created admin user: admin / admin1234')
         return admin
 
     def _create_merchants(self):
@@ -311,8 +311,8 @@ class Command(BaseCommand):
                     f"That's {{{{discount_percent}}}}% off!"
                 ),
                 close_template=(
-                    f"Ready to grab this deal? Click here: {{{{tracking_url}}}}\n"
-                    f"Use code {{{{coupon_code}}}} for extra savings!"
+                    "Ready to grab this deal? Click here: {{{{tracking_url}}}}\n"
+                    "Use code {{{{coupon_code}}}} for extra savings!"
                 ),
                 is_approved=campaign.status in ('active', 'paused', 'ended'),
                 approved_by=admin if campaign.status in ('active', 'paused', 'ended') else None,
@@ -348,7 +348,6 @@ class Command(BaseCommand):
         self.stdout.write(f'  Created A/B variants for {len(active_campaigns)} campaigns')
 
     def _create_conversations(self, merchants, campaigns):
-        now = timezone.now()
         conversations = []
         stages = ['greeting', 'qualifying', 'narrowing', 'pitching', 'objection_handling', 'closing', 'ended']
 
@@ -358,7 +357,6 @@ class Command(BaseCommand):
             num_convos = random.randint(8, 20)
             for i in range(num_convos):
                 phone = f'+9198{random.randint(10000000, 99999999)}'
-                started_at = now - timedelta(days=random.randint(0, 14), hours=random.randint(0, 23))
                 stage = random.choice(stages)
 
                 convo, created = Conversation.objects.get_or_create(

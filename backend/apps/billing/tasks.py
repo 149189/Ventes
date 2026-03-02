@@ -40,9 +40,8 @@ def check_daily_budget_caps():
 def generate_invoices():
     """Generate weekly invoices for all active merchants."""
     from django.utils import timezone
-    from django.db.models import Sum, Count
+    from django.db.models import Sum
     from apps.merchants.models import MerchantProfile
-    from apps.tracking.models import ClickEvent
     from .models import ConversionEvent, Invoice, InvoiceLine
     from .razorpay_client import create_invoice as razorpay_create_invoice
 

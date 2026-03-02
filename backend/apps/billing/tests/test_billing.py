@@ -2,9 +2,9 @@
 import time
 from datetime import timedelta
 from decimal import Decimal
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
 
@@ -701,7 +701,7 @@ class BillingTaskTest(TestCase):
     def test_generate_invoices_skips_disputed_conversions(self):
         from apps.billing.tasks import generate_invoices
 
-        conv = ConversionEvent.objects.create(
+        ConversionEvent.objects.create(
             merchant=self.merchant,
             source='postback',
             order_id='ORD-INV3',

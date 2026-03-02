@@ -8,7 +8,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from common.permissions import IsAdmin, IsAdminOrMerchant, IsAgent
+from common.permissions import IsAdminOrMerchant
 from .models import Conversation, Message
 from .serializers import ConversationListSerializer, ConversationDetailSerializer
 
@@ -338,7 +338,7 @@ class SimulateChatView(APIView):
 
         response = stage_responses.get(
             next_stage,
-            f"Welcome! I'm here to help you find the perfect product. What are you interested in?",
+            "Welcome! I'm here to help you find the perfect product. What are you interested in?",
         )
 
         # Inject tracking URLs if applicable

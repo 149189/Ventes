@@ -7,7 +7,7 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from common.permissions import IsAdmin, IsAdminOrMerchant, IsMerchant
+from common.permissions import IsAdmin, IsMerchant
 from apps.conversations.models import Conversation
 from apps.tracking.models import ClickEvent
 from apps.billing.models import ConversionEvent

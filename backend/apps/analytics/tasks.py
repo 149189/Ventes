@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 def aggregate_hourly_stats():
     """Compute hourly click stats for near-real-time dashboards."""
     from django.utils import timezone
-    from django.db.models import Count, Q
     from apps.tracking.models import ClickEvent
     from apps.merchants.models import MerchantProfile
     from .models import HourlyClickStats
@@ -39,7 +38,7 @@ def aggregate_hourly_stats():
 def aggregate_daily_stats():
     """Compute daily merchant and campaign stats."""
     from django.utils import timezone
-    from django.db.models import Sum, Count, Q
+    from django.db.models import Sum
     from apps.merchants.models import MerchantProfile
     from apps.campaigns.models import Campaign
     from apps.conversations.models import Conversation, Message

@@ -1,6 +1,5 @@
 """Comprehensive tests for production hardening — Phase 7."""
 from django.test import TestCase, RequestFactory, override_settings
-from django.test.client import Client
 
 from apps.accounts.models import User
 
