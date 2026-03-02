@@ -16,7 +16,7 @@ jobs:
         env:
           POSTGRES_DB: salescount_test
           POSTGRES_USER: salescount
-          POSTGRES_PASSWORD: salescount_test
+          POSTGRES_PASSWORD: Kaustubh@149
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
