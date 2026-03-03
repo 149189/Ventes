@@ -19,7 +19,9 @@ DATABASES = {  # noqa: F405
     }
 }
 
-# Override Redis URLs to use REDIS_URL env var instead of hardcoded localhost
+# Run Celery tasks synchronously in dev (no Redis/worker needed)
+CELERY_TASK_ALWAYS_EAGER = True  # noqa: F405
+CELERY_TASK_EAGER_PROPAGATES = False  # noqa: F405  — don't let send failures kill the pipeline
 CELERY_BROKER_URL = env('REDIS_URL', default='redis://localhost:6379/0')  # noqa: F405
 CELERY_RESULT_BACKEND = env('REDIS_URL', default='redis://localhost:6379/0')  # noqa: F405
 

@@ -13,6 +13,16 @@ HANDOFF_KEYWORDS = {'human', 'agent', 'person', 'talk to someone', 'representati
 OBJECTION_KEYWORDS = {'expensive', 'too much', 'cheaper', 'discount', 'not sure', 'think about it', 'size', 'return'}
 CLOSE_SIGNALS = {'yes', 'okay', 'sure', 'buy', 'order', 'checkout', 'link', 'send it', 'i want', "i'll take"}
 
+# Stages that need product context (RAG + embedding API call).
+# Greeting and qualifying should just chat — no products yet.
+# Only these stages need product data (costs 1 embedding API call).
+# Greeting, qualifying, narrowing just chat — no products, no API burn.
+_PRODUCT_STAGES = {
+    Conversation.Stage.PITCHING,
+    Conversation.Stage.CLOSING,
+    Conversation.Stage.OBJECTION_HANDLING,
+}
+
 
 class ConversationEngine:
     def __init__(self, conversation: Conversation):
@@ -30,53 +40,58 @@ class ConversationEngine:
             self.conversation.stage = Conversation.Stage.HANDED_OFF
             self.conversation.save()
             return ("Let me connect you with a team member. "
-                    "Someone will be with you shortly! \U0001f64f"), 0
+                    "Someone will be with you shortly!"), 0
 
-        # 3. Retrieve relevant product context via RAG
+        # 3. Determine next stage FIRST so we know whether to fetch products
+        next_stage = self._determine_next_stage(intent)
+
+        # 4. Only call RAG (embedding API) when the stage actually needs products.
+        #    This saves the Gemini embedding quota for greeting/qualifying turns
+        #    AND prevents the bot from pitching products prematurely.
         rag_context = ""
         matched_sku_ids = []
-        try:
-            rag_context, matched_sku_ids = retrieve_relevant_products(
-                query=user_message,
-                merchant_id=self.conversation.merchant_id,
-            )
-        except Exception as e:
-            logger.warning(f"RAG retrieval failed: {e}")
+        if next_stage in _PRODUCT_STAGES:
+            try:
+                rag_context, matched_sku_ids = retrieve_relevant_products(
+                    query=user_message,
+                    merchant_id=self.conversation.merchant_id,
+                )
+            except Exception as e:
+                logger.warning(f"RAG retrieval failed: {e}")
 
-        # Store recommended SKUs
-        if matched_sku_ids:
-            self.conversation.recommended_skus.add(*matched_sku_ids)
+            # Store recommended SKUs
+            if matched_sku_ids:
+                self.conversation.recommended_skus.add(*matched_sku_ids)
 
-        # 4. Get stage-appropriate system prompt
+        # 5. Get stage-appropriate system prompt
         system_prompt = get_prompt_for_stage(
             stage=self.conversation.stage,
             merchant_name=self.conversation.merchant.company_name,
             context=self.conversation.context_json,
         )
 
-        # 5. Build conversation history
+        # 6. Build conversation history
         history = self._build_history()
 
-        # 6. Generate AI response
+        # 7. Generate AI response
         try:
             response, tokens_used = generate_response(system_prompt, history, rag_context)
         except Exception as e:
-            logger.error(f"OpenAI call failed: {e}")
+            logger.error(f"Gemini call failed: {e}")
             response = ("I'm having a moment! Let me connect you "
-                        "with someone who can help. \U0001f60a")
+                        "with someone who can help.")
             self.conversation.stage = Conversation.Stage.HANDED_OFF
             self.conversation.save()
             return response, 0
 
-        # 7. Determine and apply next stage
-        next_stage = self._determine_next_stage(intent)
+        # 8. Apply the stage transition
         self.conversation.stage = next_stage
 
-        # 8. Update conversation context
+        # 9. Update conversation context
         self._update_context(user_message, intent)
         self.conversation.save()
 
-        # 9. Inject tracking URLs if in pitching/closing
+        # 10. Inject tracking URLs if in pitching/closing
         if next_stage in (Conversation.Stage.PITCHING, Conversation.Stage.CLOSING):
             response = inject_tracking_urls(response, self.conversation)
 
@@ -87,11 +102,11 @@ class ConversationEngine:
                     self.conversation.coupon_code = coupon
                     self.conversation.save()
 
-        # 10. Schedule follow-ups if closing
+        # 11. Schedule follow-ups if closing
         if next_stage == Conversation.Stage.CLOSING:
             self._schedule_followups()
 
-        # 11. End conversation if ENDED
+        # 12. End conversation if ENDED
         if next_stage == Conversation.Stage.ENDED:
             from django.utils import timezone
             self.conversation.ended_at = timezone.now()
@@ -158,7 +173,7 @@ class ConversationEngine:
             conversation=self.conversation,
             scheduled_at=timezone.now() + timedelta(hours=24),
             message_template=(
-                "Hi! Just checking in \U0001f44b Did you get a chance to check out the products "
+                "Hi! Just checking in. Did you get a chance to check out the products "
                 "we discussed? I'm here if you have any questions!"
             ),
         )
@@ -172,7 +187,7 @@ class ConversationEngine:
             conversation=self.conversation,
             scheduled_at=timezone.now() + timedelta(days=3),
             message_template=(
-                "Hey there! \U0001f31f We still have some great deals available. "
+                "Hey there! We still have some great deals available. "
                 "Would you like me to help you find the perfect product? "
                 "Reply STOP to opt out."
             ),

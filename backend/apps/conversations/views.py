@@ -59,32 +59,32 @@ class TwilioWebhookView(APIView):
                 content_type='text/xml',
             )
 
-        # Try Celery first, fall back to sync processing if unavailable
-        from .tasks import process_inbound_message
+        # Process the message synchronously so we can return the reply in TwiML.
+        # This avoids Twilio error 63015 (session window expired) by piggybacking
+        # the response on the inbound webhook instead of a separate API call.
+        from .tasks import process_inbound_message_sync
+        reply = ''
         try:
-            process_inbound_message.delay(
+            reply = process_inbound_message_sync(
                 phone_number=phone_number,
                 body=body,
                 twilio_sid=twilio_sid,
                 media_url=media_url,
             )
         except Exception as e:
-            logger.warning(f"Celery unavailable ({e}), processing synchronously")
-            try:
-                process_inbound_message(
-                    phone_number=phone_number,
-                    body=body,
-                    twilio_sid=twilio_sid,
-                    media_url=media_url,
-                )
-            except Exception as sync_err:
-                logger.error(f"Sync processing failed: {sync_err}")
+            logger.error(f"Message processing failed: {e}")
 
-        # Return empty TwiML (response sent async via Celery or sync)
-        return HttpResponse(
-            '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
-            content_type='text/xml',
-        )
+        # Return reply in TwiML — Twilio delivers this within the active session
+        if reply:
+            from xml.sax.saxutils import escape
+            twiml = (
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                f'<Response><Message>{escape(reply)}</Message></Response>'
+            )
+        else:
+            twiml = '<?xml version="1.0" encoding="UTF-8"?><Response></Response>'
+
+        return HttpResponse(twiml, content_type='text/xml')
 
 
 @method_decorator(csrf_exempt, name='dispatch')

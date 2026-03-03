@@ -165,44 +165,81 @@ class Command(BaseCommand):
         return merchants
 
     def _create_skus(self, merchants):
+        # (code, name, description, category, price_inr, disc_inr, url)
         sku_catalog = {
-            0: [  # TechMart
-                ('TM-PHONE-001', 'iPhone 15 Pro 256GB', 'Smartphones', 134900, 129900, 'https://techmart.in/iphone15pro'),
-                ('TM-PHONE-002', 'Samsung Galaxy S24 Ultra', 'Smartphones', 129999, 119999, 'https://techmart.in/s24ultra'),
-                ('TM-LAPTOP-001', 'MacBook Air M3', 'Laptops', 114900, 109900, 'https://techmart.in/macbook-m3'),
-                ('TM-AUDIO-001', 'Sony WH-1000XM5', 'Audio', 29990, 24990, 'https://techmart.in/sony-xm5'),
-                ('TM-WATCH-001', 'Apple Watch Ultra 2', 'Wearables', 89900, 84900, 'https://techmart.in/watch-ultra2'),
+            0: [  # TechMart India
+                ('TM-PHONE-001', 'iPhone 15 Pro 256GB',
+                 'Apple A17 Pro chip, 48MP camera with 5x zoom, titanium design, USB-C, all-day battery. Best for photos and gaming.',
+                 'Smartphones', 134900, 129900, 'https://techmart.in/iphone15pro'),
+                ('TM-PHONE-002', 'Samsung Galaxy S24 Ultra',
+                 'Snapdragon 8 Gen 3, 200MP camera, built-in S Pen, 6.8" AMOLED, 5000mAh battery. Top Android flagship.',
+                 'Smartphones', 129999, 119999, 'https://techmart.in/s24ultra'),
+                ('TM-LAPTOP-001', 'MacBook Air M3',
+                 'Apple M3 chip, 18hr battery, 13.6" Liquid Retina, 8GB RAM, fanless silent design. Perfect for work and travel.',
+                 'Laptops', 114900, 109900, 'https://techmart.in/macbook-m3'),
+                ('TM-AUDIO-001', 'Sony WH-1000XM5',
+                 'Industry-leading noise cancellation, 30hr battery, multipoint Bluetooth, ultra-comfortable lightweight design.',
+                 'Audio', 29990, 24990, 'https://techmart.in/sony-xm5'),
+                ('TM-WATCH-001', 'Apple Watch Ultra 2',
+                 '49mm titanium, brightest Apple display, dual-frequency GPS, 36hr battery, 100m water resistance. Built for adventure.',
+                 'Wearables', 89900, 84900, 'https://techmart.in/watch-ultra2'),
             ],
             1: [  # FashionHub
-                ('FH-SHIRT-001', 'Linen Casual Shirt', 'Men Shirts', 2499, 1999, 'https://fashionhub.in/linen-shirt'),
-                ('FH-DRESS-001', 'Floral Maxi Dress', 'Women Dresses', 3999, 2999, 'https://fashionhub.in/maxi-dress'),
-                ('FH-SHOE-001', 'Leather Oxford Shoes', 'Footwear', 5999, 4499, 'https://fashionhub.in/oxford'),
-                ('FH-BAG-001', 'Canvas Tote Bag', 'Accessories', 1499, 999, 'https://fashionhub.in/tote'),
-                ('FH-JEANS-001', 'Slim Fit Denim Jeans', 'Men Jeans', 3499, 2799, 'https://fashionhub.in/slim-jeans'),
+                ('FH-SHIRT-001', 'Linen Casual Shirt',
+                 'Pure linen, breathable fabric, regular fit, available in 6 colours. Perfect for summer and office casual.',
+                 'Men Shirts', 2499, 1999, 'https://fashionhub.in/linen-shirt'),
+                ('FH-DRESS-001', 'Floral Maxi Dress',
+                 'Flowy georgette fabric, floral print, adjustable waist tie, ankle length. Great for brunch and weekend outings.',
+                 'Women Dresses', 3999, 2999, 'https://fashionhub.in/maxi-dress'),
+                ('FH-SHOE-001', 'Leather Oxford Shoes',
+                 'Genuine leather, handcrafted, cushioned insole, classic brogue detailing. Ideal for formal and semi-formal wear.',
+                 'Footwear', 5999, 4499, 'https://fashionhub.in/oxford'),
+                ('FH-BAG-001', 'Canvas Tote Bag',
+                 'Heavy-duty cotton canvas, inner zip pocket, reinforced handles, eco-friendly. Fits laptop + daily essentials.',
+                 'Accessories', 1499, 999, 'https://fashionhub.in/tote'),
+                ('FH-JEANS-001', 'Slim Fit Denim Jeans',
+                 'Stretchable cotton-blend denim, mid-rise, tapered leg, available in 4 washes. Comfortable all-day wear.',
+                 'Men Jeans', 3499, 2799, 'https://fashionhub.in/slim-jeans'),
             ],
-            2: [  # HomeStyle
-                ('HS-SOFA-001', 'L-Shape Sectional Sofa', 'Furniture', 45999, 39999, 'https://homestyle.in/sofa'),
-                ('HS-LAMP-001', 'Nordic Floor Lamp', 'Lighting', 4999, 3999, 'https://homestyle.in/lamp'),
-                ('HS-RUG-001', 'Persian Area Rug 5x7', 'Decor', 12999, 9999, 'https://homestyle.in/rug'),
-                ('HS-BED-001', 'King Size Bed Frame', 'Furniture', 29999, 24999, 'https://homestyle.in/bed'),
+            2: [  # HomeStyle Living
+                ('HS-SOFA-001', 'L-Shape Sectional Sofa',
+                 '6-seater, premium fabric upholstery, high-density foam, reversible chaise, 5yr frame warranty.',
+                 'Furniture', 45999, 39999, 'https://homestyle.in/sofa'),
+                ('HS-LAMP-001', 'Nordic Floor Lamp',
+                 'Minimalist Scandinavian design, adjustable arm, warm LED bulb included, matte black finish.',
+                 'Lighting', 4999, 3999, 'https://homestyle.in/lamp'),
+                ('HS-RUG-001', 'Persian Area Rug 5x7',
+                 'Hand-woven, traditional Persian pattern, soft wool-blend, non-slip backing. Adds elegance to any room.',
+                 'Decor', 12999, 9999, 'https://homestyle.in/rug'),
+                ('HS-BED-001', 'King Size Bed Frame',
+                 'Solid sheesham wood, walnut finish, slatted base (no box spring needed), headboard storage. Assembly included.',
+                 'Furniture', 29999, 24999, 'https://homestyle.in/bed'),
             ],
-            3: [  # HealthPlus
-                ('HP-VIT-001', 'Multivitamin 90 Tablets', 'Vitamins', 999, 799, 'https://healthplus.in/multivitamin'),
-                ('HP-PROT-001', 'Whey Protein 2kg', 'Nutrition', 3999, 2999, 'https://healthplus.in/whey'),
-                ('HP-MASK-001', 'N95 Masks (Pack of 50)', 'Safety', 1499, 999, 'https://healthplus.in/n95'),
-                ('HP-THERM-001', 'Digital Thermometer', 'Devices', 599, 499, 'https://healthplus.in/thermometer'),
+            3: [  # HealthPlus Pharmacy
+                ('HP-VIT-001', 'Multivitamin 90 Tablets',
+                 'Complete A-Z multivitamin, 90-day supply, includes iron + zinc + B12 + vitamin D. Doctor-recommended daily formula.',
+                 'Vitamins', 999, 799, 'https://healthplus.in/multivitamin'),
+                ('HP-PROT-001', 'Whey Protein 2kg',
+                 '24g protein per scoop, low sugar, fast absorbing, available in chocolate and vanilla. FSSAI certified.',
+                 'Nutrition', 3999, 2999, 'https://healthplus.in/whey'),
+                ('HP-MASK-001', 'N95 Masks (Pack of 50)',
+                 '5-layer filtration, BIS certified, adjustable nose clip, ear-loop design. Filters 95% airborne particles.',
+                 'Safety', 1499, 999, 'https://healthplus.in/n95'),
+                ('HP-THERM-001', 'Digital Thermometer',
+                 'Instant 10-second reading, fever alert beep, memory recall, flexible tip. Suitable for oral/underarm use.',
+                 'Devices', 599, 499, 'https://healthplus.in/thermometer'),
             ],
         }
 
         all_skus = []
         for idx, merchant in enumerate(merchants):
-            for code, name, category, price, disc, url in sku_catalog.get(idx, []):
-                sku, _ = SKU.objects.get_or_create(
+            for code, name, desc, category, price, disc, url in sku_catalog.get(idx, []):
+                sku, created = SKU.objects.get_or_create(
                     merchant=merchant,
                     sku_code=code,
                     defaults={
                         'name': name,
-                        'description': f'High-quality {name.lower()} from {merchant.company_name}.',
+                        'description': desc,
                         'category': category,
                         'original_price': Decimal(str(price)),
                         'discounted_price': Decimal(str(disc)),
@@ -211,6 +248,10 @@ class Command(BaseCommand):
                         'is_active': True,
                     },
                 )
+                # Update description on existing SKUs too
+                if not created and sku.description != desc:
+                    sku.description = desc
+                    sku.save(update_fields=['description'])
                 all_skus.append(sku)
 
         self.stdout.write(f'  Created {len(all_skus)} SKUs')

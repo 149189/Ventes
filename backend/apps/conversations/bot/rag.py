@@ -1,4 +1,4 @@
-"""RAG (Retrieval Augmented Generation) module using Pinecone."""
+"""RAG (Retrieval Augmented Generation) module using Pinecone + Gemini embeddings."""
 import logging
 
 from django.conf import settings
@@ -18,18 +18,30 @@ def get_pinecone_index():
 
 
 def embed_text(text: str) -> list[float]:
-    """Embed text using OpenAI embeddings."""
-    import openai
-    client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-    response = client.embeddings.create(
-        model="text-embedding-3-small",
-        input=text,
+    """Embed text using Google Gemini embeddings."""
+    from google import genai
+
+    client = genai.Client(api_key=settings.GOOGLE_API_KEY)
+    result = client.models.embed_content(
+        model=settings.GEMINI_EMBEDDING_MODEL,
+        contents=text,
     )
-    return response.data[0].embedding
+    return result.embeddings[0].values
 
 
-def retrieve_relevant_products(query: str, merchant_id: int, top_k: int = 5) -> tuple[str, list[int]]:
-    """Retrieve relevant products from Pinecone and format as context string.
+def _format_price(amount) -> str:
+    """Format a price in Indian Rupees."""
+    try:
+        val = int(float(amount))
+        if val >= 1000:
+            return f"Rs.{val:,}"
+        return f"Rs.{val}"
+    except (ValueError, TypeError):
+        return f"Rs.{amount}"
+
+
+def retrieve_relevant_products(query: str, merchant_id: int, top_k: int = 3) -> tuple[str, list[int]]:
+    """Retrieve relevant products from Pinecone and format as compact context.
 
     Returns:
         tuple of (context_string, list_of_sku_ids)
@@ -57,17 +69,22 @@ def retrieve_relevant_products(query: str, merchant_id: int, top_k: int = 5) -> 
             sku_id = meta.get('sku_id')
             if sku_id:
                 sku_ids.append(sku_id)
-            part = (
-                f"- {meta.get('name', 'Product')}: {meta.get('description', '')}\n"
-                f"  Category: {meta.get('category', 'N/A')} | "
-                f"  Price: ${meta.get('original_price', '?')}"
-            )
-            if meta.get('discounted_price'):
-                part += f" -> ${meta['discounted_price']} (SALE)"
-            if meta.get('stock_quantity', 0) > 0 and meta.get('stock_quantity', 999) < 10:
-                part += f" | Only {meta['stock_quantity']} left!"
-            part += f"\n  Link: [product_link:{sku_id or ''}]"
-            context_parts.append(part)
+
+            name = meta.get('name', 'Product')
+            desc = meta.get('description', '')
+            category = meta.get('category', '')
+            price = _format_price(meta.get('original_price', '?'))
+            line = f"{name} ({category}) - {desc} - {price}"
+
+            disc = meta.get('discounted_price')
+            if disc:
+                line += f" NOW {_format_price(disc)}"
+
+            stock = meta.get('stock_quantity', 999)
+            if 0 < stock < 10:
+                line += f" (Only {stock} left!)"
+
+            context_parts.append(line)
 
         return "\n".join(context_parts), sku_ids
 
@@ -83,7 +100,7 @@ def _fallback_db_retrieval(merchant_id: int, query: str) -> tuple[str, list[int]
     skus = SKU.objects.filter(
         merchant_id=merchant_id,
         is_active=True,
-    ).order_by('-updated_at')[:5]
+    ).order_by('-updated_at')[:3]
 
     if not skus:
         return "No products available at the moment.", []
@@ -92,16 +109,12 @@ def _fallback_db_retrieval(merchant_id: int, query: str) -> tuple[str, list[int]
     sku_ids = []
     for sku in skus:
         sku_ids.append(sku.id)
-        part = (
-            f"- {sku.name}: {sku.description[:100]}\n"
-            f"  Category: {sku.category} | Price: ${sku.original_price}"
-        )
+        line = f"{sku.name} ({sku.category}) - {sku.description[:150]} - {_format_price(sku.original_price)}"
         if sku.discounted_price:
-            part += f" -> ${sku.discounted_price} (SALE)"
+            line += f" NOW {_format_price(sku.discounted_price)}"
         if 0 < sku.stock_quantity < 10:
-            part += f" | Only {sku.stock_quantity} left!"
-        part += f"\n  Link: [product_link:{sku.id}]"
-        parts.append(part)
+            line += f" (Only {sku.stock_quantity} left!)"
+        parts.append(line)
 
     return "\n".join(parts), sku_ids
 
@@ -113,9 +126,9 @@ def upsert_sku(sku) -> None:
         logger.warning("Pinecone not available, skipping upsert")
         return
 
-    text = f"{sku.name} - {sku.description} - Category: {sku.category} - Price: ${sku.original_price}"
+    text = f"{sku.name} - {sku.description} - Category: {sku.category} - Rs.{sku.original_price}"
     if sku.discounted_price:
-        text += f" (Now ${sku.discounted_price})"
+        text += f" (Now Rs.{sku.discounted_price})"
 
     try:
         vector = embed_text(text)

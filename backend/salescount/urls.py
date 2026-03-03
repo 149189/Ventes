@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.urls import path, include
 
+from apps.conversations.views import TwilioWebhookView
 from common.health import health_check, readiness_check
 
 urlpatterns = [
@@ -20,6 +21,10 @@ urlpatterns = [
     path('api/v1/analytics/', include('apps.analytics.urls')),
     # Click tracking redirect (outside /api/)
     path('t/', include('apps.tracking.urls_redirect')),
+
+    # Shortcut: Twilio calls POST /whatsapp — route directly to the webhook view
+    path('whatsapp', TwilioWebhookView.as_view(), name='whatsapp-shortcut'),
+    path('whatsapp/', TwilioWebhookView.as_view(), name='whatsapp-shortcut-slash'),
 ]
 
 if settings.DEBUG:
