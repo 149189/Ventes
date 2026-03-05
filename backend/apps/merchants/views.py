@@ -113,7 +113,7 @@ class AdminMerchantListView(generics.ListAPIView):
     serializer_class = MerchantProfileSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
     queryset = MerchantProfile.objects.all()
-    filterset_fields = ('status', 'tier')
+    filterset_fields = ('status', 'tier', 'industry')
     search_fields = ('company_name', 'contact_email')
     ordering_fields = ('created_at', 'company_name')
 

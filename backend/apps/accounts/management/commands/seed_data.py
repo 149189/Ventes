@@ -97,6 +97,7 @@ class Command(BaseCommand):
             {
                 'username': 'merchant_techmart',
                 'company_name': 'TechMart India',
+                'industry': MerchantProfile.Industry.TECH,
                 'contact_email': 'sales@techmart.in',
                 'contact_phone': '+919876543210',
                 'billing_address': '42 MG Road, Bengaluru 560001',
@@ -108,6 +109,7 @@ class Command(BaseCommand):
             {
                 'username': 'merchant_fashionhub',
                 'company_name': 'FashionHub',
+                'industry': MerchantProfile.Industry.FASHION,
                 'contact_email': 'hello@fashionhub.in',
                 'contact_phone': '+919876543211',
                 'billing_address': '15 Linking Road, Mumbai 400050',
@@ -119,6 +121,7 @@ class Command(BaseCommand):
             {
                 'username': 'merchant_homestyle',
                 'company_name': 'HomeStyle Living',
+                'industry': MerchantProfile.Industry.HOME,
                 'contact_email': 'info@homestyle.in',
                 'contact_phone': '+919876543212',
                 'billing_address': '88 Nehru Place, Delhi 110019',
@@ -130,6 +133,7 @@ class Command(BaseCommand):
             {
                 'username': 'merchant_healthplus',
                 'company_name': 'HealthPlus Pharmacy',
+                'industry': MerchantProfile.Industry.HEALTH,
                 'contact_email': 'orders@healthplus.in',
                 'contact_phone': '+919876543213',
                 'billing_address': '5 Anna Salai, Chennai 600002',

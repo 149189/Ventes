@@ -7,7 +7,7 @@ class MerchantProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = MerchantProfile
         fields = (
-            'id', 'company_name', 'company_website', 'contact_email',
+            'id', 'company_name', 'industry', 'company_website', 'contact_email',
             'contact_phone', 'billing_address', 'tax_id', 'status', 'tier',
             'commission_rate', 'auto_optimize_commission', 'daily_budget_cap',
             'billing_model', 'dispute_window_days', 'whatsapp_number',
@@ -20,7 +20,7 @@ class MerchantOnboardSerializer(serializers.ModelSerializer):
     class Meta:
         model = MerchantProfile
         fields = (
-            'company_name', 'company_website', 'contact_email',
+            'company_name', 'industry', 'company_website', 'contact_email',
             'contact_phone', 'billing_address', 'tax_id', 'whatsapp_number',
         )
 

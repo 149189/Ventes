@@ -42,7 +42,7 @@ export default function Sidebar({ role }: SidebarProps) {
     <aside className="w-64 bg-white border-r border-gray-200 min-h-screen p-4">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">
-          Sales<span className="text-primary-600">Count</span>
+          Ven<span className="text-primary-600">tes</span>
         </h1>
         <p className="text-xs text-gray-500 mt-1">
           {role === 'admin' ? 'Admin Panel' : 'Merchant Portal'}

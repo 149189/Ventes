@@ -5,8 +5,8 @@ from .models import MerchantProfile, SKU, PromoRule
 
 @admin.register(MerchantProfile)
 class MerchantProfileAdmin(admin.ModelAdmin):
-    list_display = ('company_name', 'user', 'status', 'tier', 'commission_rate', 'created_at')
-    list_filter = ('status', 'tier', 'billing_model')
+    list_display = ('company_name', 'user', 'industry', 'status', 'tier', 'commission_rate', 'created_at')
+    list_filter = ('status', 'tier', 'industry', 'billing_model')
     search_fields = ('company_name', 'contact_email')
 
 

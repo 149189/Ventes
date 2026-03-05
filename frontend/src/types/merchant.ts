@@ -1,6 +1,31 @@
+export type MerchantIndustry = 'tech' | 'fashion' | 'home' | 'health' | 'food' | 'beauty' | 'sports' | 'other';
+
+export const INDUSTRY_LABELS: Record<MerchantIndustry, string> = {
+  tech: 'Technology',
+  fashion: 'Fashion & Clothing',
+  home: 'Home & Living',
+  health: 'Health & Wellness',
+  food: 'Food & Beverages',
+  beauty: 'Beauty & Personal Care',
+  sports: 'Sports & Fitness',
+  other: 'Other',
+};
+
+export const INDUSTRY_ICONS: Record<MerchantIndustry, string> = {
+  tech: 'laptop',
+  fashion: 'shirt',
+  home: 'home',
+  health: 'heart-pulse',
+  food: 'utensils',
+  beauty: 'sparkles',
+  sports: 'dumbbell',
+  other: 'package',
+};
+
 export interface MerchantProfile {
   id: number;
   company_name: string;
+  industry: MerchantIndustry;
   company_website: string;
   contact_email: string;
   contact_phone: string;

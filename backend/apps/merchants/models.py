@@ -17,10 +17,21 @@ class MerchantProfile(models.Model):
         GOLD = 'gold', 'Gold'
         PLATINUM = 'platinum', 'Platinum'
 
+    class Industry(models.TextChoices):
+        TECH = 'tech', 'Technology'
+        FASHION = 'fashion', 'Fashion & Clothing'
+        HOME = 'home', 'Home & Living'
+        HEALTH = 'health', 'Health & Wellness'
+        FOOD = 'food', 'Food & Beverages'
+        BEAUTY = 'beauty', 'Beauty & Personal Care'
+        SPORTS = 'sports', 'Sports & Fitness'
+        OTHER = 'other', 'Other'
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='merchant_profile',
     )
     company_name = models.CharField(max_length=255)
+    industry = models.CharField(max_length=20, choices=Industry.choices, default=Industry.OTHER)
     company_website = models.URLField(blank=True)
     contact_email = models.EmailField()
     contact_phone = models.CharField(max_length=20)
